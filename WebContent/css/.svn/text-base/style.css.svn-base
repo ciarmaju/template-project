@@ -1,0 +1,236 @@
+		#filterprojecttooltip{
+				width:250px;
+				height:150px;
+				border-color: rgb(221, 221, 221) rgb(204, 204, 204) rgb(204, 204, 204) rgb(221, 221, 221);
+ 				border-radius: 5px 5px 5px 5px; 
+				border-width: 2px;
+				box-shadow: 2px 2px 4px rgb(221, 221, 221);
+				margin: 3px;
+				top:30px;
+				left:85px;
+				position:absolute;
+			}
+		#filterusertooltip{
+				width:250px;
+				height:150px;
+				border-color: rgb(221, 221, 221) rgb(204, 204, 204) rgb(204, 204, 204) rgb(221, 221, 221);
+ 				border-radius: 5px 5px 5px 5px; 
+				border-width: 2px;
+				box-shadow: 2px 2px 4px rgb(221, 221, 221);
+				margin: 3px;
+				top:30px;
+				left:385px;
+				position:absolute;
+		
+		}
+    	.realshadow{
+			border : solid 10px; /*needed to draw border (in some browsers)*/
+			-moz-border-image: url(../images/_global/cadre.png) 8  stretch;/* for before firefox15*/
+			-webkit-border-image: url(../images/_global/cadre.png) 8  stretch; /*for safari ,mobile browser and chrome before 16*/
+			-o-border-image: url(../images/_global/cadre.png) 8    stretch; /* for opera*/
+			border-image: url(../images/_global/cadre.png) 8    stretch; /*correct declaration*/
+		}
+    	.logged{
+    		background-position: -39px -655px;
+			background-image: url('../images/pics.png?v=5');
+			background-repeat: no-repeat;
+			background-repeat-x: no-repeat;
+			background-repeat-y: no-repeat;
+			width:9px;
+			height:9px;
+    	}
+    	.notlogged{
+    		background-position: -8px -730px;
+			background-image: url('../images/pics.png?v=5');
+			background-repeat: no-repeat;
+			background-repeat-x: no-repeat;
+			background-repeat-y: no-repeat;
+			width:9px;
+			height:9px;
+    	}
+    	html, body {
+    		margin: 0px;
+    		padding: 0px;
+    		height: 100%;
+    		width: 100%;
+    		background-color: #faf7f0;
+    		overflow: hidden;
+    	}
+    	.filters_wrapper {
+			position: absolute;
+			top:50%;
+			left: 20%;
+			line-height: 12px;
+			font-size: 12px;
+		}
+		.filters_wrapper span {
+			font-weight: bold;
+			padding-right: 5px;
+		}
+		.filters_wrapper label {
+			padding-right: 3px;
+		}
+    	.menu {
+	    	width: 234px;
+	    	height: 100%;
+	    	float: left;
+			background-color: #f0ede7;
+    	}
+    	.menu ul {
+    		padding: 10px 0px;
+    		margin: 0px;
+    		background-color: #e4e1db;
+    	}
+    	.menu li {
+    		list-style-type: none;
+    		height: 30px;
+    		background-color: #f0ede7;
+    		border-bottom: 1px solid #cdcdcd;
+    	}
+    	.menu li a {
+    		width: 100%;
+    		height: 100%;
+    		display: block;
+    		line-height: 30px;
+    		padding-left: 10px;
+    		box-sizing: border-box;
+			padding-left: 20px;
+			color: #00829d;
+			text-decoration: none;
+			font-family: Arial;
+			font-size: 14px;
+    	}
+    	.menu li a:hover {
+    		background-image: url("../codebase/demo/menu.png");
+    		background-repeat: repeat-x;
+    		background-position: 0px 0px;
+    		color: #ffffff;
+    	}
+    	
+    	.sub{
+	    	width: 100%;
+    		height: 100%;
+    		display: block;
+    		line-height: 30px;
+    		padding-left: 10px;
+    		box-sizing: border-box;
+			padding-left: 20px;
+			color: #00829d;
+			text-decoration: none;
+			font-family: Arial;
+			font-size: 14px;
+    	}
+    	.sub:hover{
+    		background-image: url("../codebase/demo/menu.png");
+    		background-repeat: repeat-x;
+    		background-position: 0px 0px;
+    		cursor:pointer;
+    		color: #ffffff;
+    	}
+    	
+    	.header {
+			width: 100%;
+			height: 56px;
+			background-image: url("../codebase/demo/header.png");
+			background-position: 0px 0px;
+			background-repeat: repeat-x;
+		}
+		.logo {
+			background-image: url("../codebase/demo/logo.png");
+			background-position: 30px 10px;
+			background-repeat: no-repeat;
+			width: 100%;
+			height: 100%;
+		}
+		.dhx_cal_container {
+			background-color: #faf7f0;
+			float: left;
+			height: 100%;
+			width: 88%;
+			position: absolute;
+			left: 234px;
+			webkit-border-radius: 5px 0px 0px 0px;
+			border-radius: 5px 0px 0px 0px;
+			-webkit-box-shadow: -3px 0px 14px rgba(50, 50, 50, 0.1);
+			-moz-box-shadow:    -3px 0px 14px rgba(50, 50, 50, 0.1);
+			box-shadow:         -3px 0px 14px rgba(50, 50, 50, 0.1);
+			padding-top: 20px;
+			padding-bottom: 20px;
+			padding-right: 20px;
+			padding-left: 40px;
+			box-sizing: border-box;
+		}
+		.sample {
+			width: 900px;
+			height: 80px;
+			margin-bottom: 10px;
+		}
+		.sample .name {
+			width: 32%;
+			height: 100%;
+			font-family: Arial;
+			font-size: 24px;
+			color: #a54a4a;
+			float: left;
+			padding: 4px;
+			padding-right: 20px;
+			box-sizing: border-box;
+			background-image: url("../codebase/demo/delimiter.png");
+			background-position: right top;
+			background-repeat: no-repeat;
+		}
+		.sample .dsc {
+			width: 60%;
+			height: 100%;
+			font-family: Tahoma;
+			font-size: 14px;
+			color: #464646;
+			float: left;
+			padding: 4px;
+			padding-left: 20px;
+			box-sizing: border-box;
+		}
+		.scheduler>div {
+			border: 1px solid #cecece;
+		}
+		
+		
+		/*event in day or week view*/
+        .dhx_cal_event.past_event div{
+            background-color: black !important;
+            color: white !important;
+        }
+        /*multi-day event in month view*/
+        .dhx_cal_event_line.past_event{
+            background-color: black !important;
+            color: white !important;
+        }
+        /*event with fixed time, in month view*/
+        .dhx_cal_event_clear.past_event{
+            color: black !important;
+        }
+
+        .dhx_cal_event.event_1 div, .dhx_cal_event_line.event_1{
+            background-color: #add8e6 !important;
+            color: #8b0000 !important;
+        }
+        .dhx_cal_event_clear.event_1{
+            color: blue !important;
+        }
+        
+        .dhx_cal_event.event_2 div, .dhx_cal_event_line.event_2{
+            background-color: red !important;
+            color: white !important;
+        }
+        .dhx_cal_event_clear.event_2{
+            color: red !important;
+        }
+        
+        .dhx_cal_event.event_3 div, .dhx_cal_event_line.event_3{
+            background-color: green !important;
+            color: white !important;
+        }
+        .dhx_cal_event_clear.event_3{
+            color: green !important;
+        }
+

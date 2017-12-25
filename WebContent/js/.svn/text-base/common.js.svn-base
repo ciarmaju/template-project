@@ -1,0 +1,1099 @@
+// Global variables
+xMousePos = 0; // Horizontal position of the mouse on the screen
+yMousePos = 0; // Vertical position of the mouse on the screen
+xMousePosMax = 0; // Width of the page
+yMousePosMax = 0; // Height of the page
+var _cal_loaded = 0;
+
+if(!window.Node || !Node.ELEMENT_NODE){
+    Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
+};
+
+function modalConfirm(msg){
+	if (isMSIE()){
+		return window.showModalDialog('/mtug/modals/Confirm.jsp?msg='+msg+'&msgtype=confirm', '', 'dialogHeight:'+(msg.length > 100 ? '200' : '125')+'px;dialogWidth:400px;status:no;scroll:no;resizable:no;help:no;');
+	}else{
+		return confirm(msg);
+	}
+}
+
+function modalWarning(msg){
+	if (isMSIE()){
+		return window.showModalDialog('/mtug/modals/Confirm.jsp?msg='+msg+'&msgtype=warning', '', 'dialogHeight:150px;dialogWidth:400px;status:no;scroll:no;resizable:no;help:no;');
+	}else{
+		return confirm(msg);
+	}
+}
+
+function modalAlert(msg){
+	if (isMSIE()){
+		window.showModalDialog('/mtug/modals/Confirm.jsp?msg='+msg+'&msgtype=alert', '', 'dialogHeight:150px;dialogWidth:400px;status:no;scroll:no;resizable:no;help:no;');
+	}else{
+		alert(msg);
+	}
+	return false;
+}
+
+function modalError(msg){
+	if (isMSIE()){
+		window.showModalDialog('/mtug/modals/Confirm.jsp?msg='+msg+'&msgtype=error', '', 'dialogHeight:150px;dialogWidth:400px;status:no;scroll:no;resizable:no;help:no;');
+	}else{
+		alert(msg);
+	}
+	return false;
+}
+
+// <select> box function to dynamicaly filter
+var selectBoxObj
+var selectBoxArray = new Array();	// a copy of <select> item into an array
+
+function doFilterSelectBox(filtervalue){
+	filtervalue = filtervalue.toLowerCase();
+	var len = selectBoxObj.length;
+	if (filtervalue.length > 0 && filtervalue.charAt(0) == '%'){
+		if (filtervalue.length == 1 && len == selectBoxArray.length) return;
+		filtervalue = filtervalue.substring(1);
+		selectBoxObj.length = 0;
+		for(var i = 0; i < selectBoxArray.length ; i++){
+			if(selectBoxArray[i][0].toLowerCase().indexOf(filtervalue) >= 0){
+				selectBoxObj.options.add(new Option(selectBoxArray[i][0],selectBoxArray[i][1]));
+			}
+		}
+	}else{
+		if (filtervalue.length == 0 && len == selectBoxArray.length) return;
+		selectBoxObj.length = 0;
+		len = selectBoxArray.length;
+		for(var i = 0; i < len ; i++){
+			if(selectBoxArray[i][0].toLowerCase().indexOf(filtervalue) == 0){
+				selectBoxObj.options.add(new Option(selectBoxArray[i][0],selectBoxArray[i][1]));
+			}
+		}
+	}
+}
+
+function preloadSelectBoxInArray(selectboxId){
+	selectBoxObj = document.getElementById(selectboxId);
+	for(var i = 0; i < selectBoxObj.length; i++){
+		selectBoxArray[i] = new Array(selectBoxObj.options[i].text,selectBoxObj.options[i].value);
+	}
+}
+//end of <select> box function to dynamicaly filter
+
+function pickUser(displayfield, valuefield){
+	var newWindow;
+	newWindow = window.open('/mtug/actions/family.UserMngt?parpagede=50&quicklist=&back_display='+displayfield+'&back_value='+valuefield,'pickauser','resizable=no,height=600,width=800,toolbar=no,minimize=no,status=no,memubar=no,location=no,scrollbars=yes,titlebar=no,left='+((screen.width/2)-400)+",top="+((screen.height/2)-300))
+
+	return false;
+}
+
+var calendarTargetObj = null;
+var calendarRecuCall = false;
+
+function showCalendar(fname, targetobj){
+	if (!calendarRecuCall){
+		calendarTargetObj = targetobj;
+		calendarRecuCall = true;
+	}
+
+	if (_cal_loaded == 1){
+		// calendar.js already loaded
+		_cal_initCal(fname, calendarTargetObj);
+		calendarRecuCall = false;
+	}else{
+		// calendar.js not loaded => load it and wait for it to be loaded
+		include('/js/calendar.js');
+		setTimeout("showCalendar('"+fname+"')", 250);
+	}
+}
+
+function showDivCalendar(fname){
+	document.getElementById('mtcalendar').style.left = xMousePos;
+	document.getElementById('mtcalendar').style.top = yMousePos;
+	document.getElementById('mtcalendar').style.display = 'block';
+
+	if (xMousePos + (parseInt(document.getElementById('mtcalendar').style.width)) > document.body.clientWidth){
+		document.getElementById('mtcalendar').style.left = (document.body.clientWidth - parseInt(document.getElementById('mtcalendar').style.width+0) + 10) + 'px';
+	}
+	if (yMousePos + (parseInt(document.getElementById('mtcalendar').style.height)) > document.body.clientHeight){
+		document.getElementById('mtcalendar').style.top = (document.body.clientHeight - parseInt(document.getElementById('mtcalendar').style.height+0) + 10) + 'px';
+	}
+
+	var newWindow;
+	newWindow = window.open('/mtug/modals/Calendar.jsp?fieldname='+fname,'mtcalendar','resizable=no,height=200,width=250,toolbar=no,minimize=no,status=no,memubar=no,location=no,scrollbars=no,titlebar=no,left='+((screen.width/2)-125)+",top="+((screen.height/2)-100))
+}
+
+function showColorPicker(fname){
+	var newWindow;
+	newWindow = window.open('/mtug/modals/ColorPicker.jsp?fieldname='+fname,'mtcolorpicker','resizable=no,height=250,width=300,toolbar=no,minimize=no,status=no,memubar=no,location=no,scrollbars=no,titlebar=no,left='+((screen.width/2)-125)+",top="+((screen.height/2)-100))
+	return false;
+}
+
+function addEvent( obj, type, fn ) { 
+	if ( obj.attachEvent ) { 
+		obj['e'+type+fn] = fn; 
+		obj[type+fn] = function(){obj['e'+type+fn]( window.event );} 
+		obj.attachEvent( 'on'+type, obj[type+fn] ); 
+	} else {
+		obj.addEventListener( type, fn, false ); 
+	}
+} 
+function removeEvent( obj, type, fn ) { 
+	if ( obj.detachEvent ) { 
+		obj.detachEvent( 'on'+type, obj[type+fn] ); 
+		obj[type+fn] = null; 
+	} else {
+		obj.removeEventListener( type, fn, false ); 
+	}
+}
+
+var montharray=new Array("January","February","March","April","May","June","July","August","September","October","November","December")
+
+function getthedate(){
+	seconds += 1
+	if (seconds >= 60){
+		seconds = 0
+		minutes += 1
+	}
+	if (minutes >= 60){
+		minutes = 0
+		hours += 1
+	}
+	if (hours >= 24){
+		hours = 0
+		day += 1
+	}
+	if (month == 2){
+		if (((day > 28) && !(((year % 400) == 0) || (((year % 4) == 0) && ((year % 100) != 0)))) || (day > 29)){
+			day = 1
+			month = 3
+		}
+	}
+	if ((day > 30) && ((month == 4) || (month == 6) || (month == 9) || (month == 11))){
+		day = 1
+		month += 1
+	}
+	if (day > 31){
+		day = 1
+		month += 1
+	}
+	if (month > 12){
+		month = 1
+		year += 1
+	}
+
+	var cdate="<small>"/*<b>*/
+			+ montharray[month-1] + " " + (day < 10 ? "0" : "") + day + ", "+year+" "
+			+ (hours < 10 ? "0" : "") + hours + ":"
+			+ (minutes < 10 ? "0" : "") + minutes + ":"
+			+ (seconds < 10 ? "0" : "") + seconds 
+			+ /*</b>*/"</small>"
+
+	if (isMSIE()){
+		if (document.all.clock != null) document.all.clock.innerHTML=cdate;
+	}else if (document.getElementById){
+		if (document.getElementById("clock") != null) document.getElementById("clock").innerHTML=cdate;
+	}else{
+		document.write(cdate);
+	}
+}
+
+if (!document.all && !document.getElementById)
+	getthedate()
+
+function goforit(){
+	if (document.all || document.getElementById){
+		getthedate()
+		setInterval("getthedate()",1000)
+	}
+}
+
+if (document.layers) { // Netscape
+    document.captureEvents(Event.MOUSEMOVE);
+    document.onmousemove = captureMousePosition;
+} else if (document.all) { // Internet Explorer
+    document.onmousemove = captureMousePosition;
+} else if (document.getElementById) { // Netcsape 6
+    document.onmousemove = captureMousePosition;
+}
+addEvent(document,'click', function(){document.onmousemove = captureMousePosition;})
+function captureMousePosition(e) {
+	if (!e) e = window.event;
+
+	
+    xMousePos = e.pageX;
+	yMousePos = e.pageY;
+	xMousePosMax = window.innerWidth+window.pageXOffset;
+	yMousePosMax = window.innerHeight+window.pageYOffset;
+    
+}
+
+function checkEmail(x){
+	var filter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+	if (filter.test(x)) return true;
+
+	return false;
+}
+
+function checkMail(x){
+	if (!checkEmail(x)){
+		return modalError('Incorrect email address: '+x);
+	}
+	return true;
+}
+
+function checkMailList(val, blankallowed){
+	if ((val.length == 0) && blankallowed) return true;
+	if ((val.indexOf(',') > 0) && (val.indexOf(';') > 0)){
+		modalAlert('You cannot use comma and semicolon as separator');
+		return false;
+	}
+	if ((val.indexOf(',') < 0) && (val.indexOf(';') < 0)){
+		return checkMail(val);
+	}
+	var listEm = new Array();
+	if (val.indexOf(',') > 0){
+		listEm = val.split(',');
+	}else if (val.indexOf(';') > 0){
+		listEm = val.split(';');
+	}
+	for (var i = 0; i < listEm.length;i++){
+		if (!checkMail(listEm[i])) return false;
+	}
+	return true;
+}
+
+function checkMobileNum(x){
+	var filter  = /^([\+])*([1-9])([0-9])+$/;
+
+	if (filter.test(x)) return true;
+
+	return modalError('Incorrect phone number: '+x+'<br>Use international formatting (ex: <i>32479445566</i>)');
+}
+
+function removeNonDigit(fi){
+	switch(event.keyCode){
+		case 8: // back
+		case 9: // tab
+		case 37: // cursor right
+		case 38: // cursor left
+		case 39: // cursor up
+		case 40: // cursor bottom
+		case 35: // home
+		case 36: // end
+		case 46: // del
+				return true;
+	}
+	var string = "1234567890";
+	var tmp = '';
+	for (var i = 0;i < fi.value.length;i++){
+		if (string.indexOf(fi.value.charAt(i)) >= 0 || (i == 0 && fi.value.charAt(i) == '-')){
+			tmp += fi.value.charAt(i);
+		}
+	}
+	fi.value = tmp;
+}
+function removeNonDigitFromEvent(e){
+	if (!e && window.event) e = window.event;
+
+	removeNonDigit(getEventSourceObject(e));
+}
+
+function checkDouble(fi){
+	switch(event.keyCode){
+		case 8: // back
+		case 9: // tab
+		case 37: // cursor right
+		case 38: // cursor left
+		case 39: // cursor up
+		case 40: // cursor bottom
+		case 35: // home
+		case 36: // end
+		case 46: // del
+				return true;
+	}
+	var string = "1234567890.";
+	var tmp = '';
+	var pointTrouV = false;
+	for (var i = 0;i < fi.value.length;i++){
+		if (string.indexOf(fi.value.charAt(i)) >= 0){
+			if (pointTrouV && fi.value.charAt(i) == '.') continue;
+			if (fi.value.charAt(i) == '.') pointTrouV = true;
+			tmp += fi.value.charAt(i);
+		}
+	}
+	fi.value = tmp;
+}
+
+function checkDoubleFromEvent(e) {
+	switch(event.keyCode){
+		case 8: // back
+		case 9: // tab
+		case 37: // cursor right
+		case 38: // cursor left
+		case 39: // cursor up
+		case 40: // cursor bottom
+		case 35: // home
+		case 36: // end
+		case 46: // del
+				return true;
+	}
+	var fi = getEventSourceObject(e);
+	var string = "1234567890.";
+	var tmp = '';
+	var pointTrouV = false;
+	for (var i = 0;i < fi.value.length;i++){
+		if (string.indexOf(fi.value.charAt(i)) >= 0){
+			if (pointTrouV && fi.value.charAt(i) == '.') continue;
+			if (fi.value.charAt(i) == '.') pointTrouV = true;
+			tmp += fi.value.charAt(i);
+		}
+	}
+	fi.value = tmp;
+}
+
+function checkEnter(e){         // e is event object passed from function invocation
+	if (!e) e = window.event;
+	var characterCode           // literal character code will be stored in this variable
+	if (e && e.which){      // if which property of event object is supported (NN4)
+		characterCode = e.which;     // character code is contained in NN4's which property
+	}else{
+		characterCode = e.keyCode   // character code is contained in IE's keyCode property
+	}
+	if (characterCode == 13){       // if generated character code is equal to ascii 13 (if enter key)
+		return true
+	}else{
+		return false
+	}
+}
+
+function clickOnRow(e){
+	if (!e) e = window.event;
+
+	var targobj = getEventSourceObject(e);
+
+	if (isSafari()){
+		return (targobj.tagName.toLowerCase() == 'tr') || (targobj.tagName.toLowerCase() == 'td');
+	/*}else if (document.layers) { // Netscape
+		var tname = targobj.tagName+'';
+		tname = tname.toLowerCase();
+		return (tname == 'tr') || (tname == 'td');*/
+	} else if (document.all) { // Internet Explorer
+		return (targobj.tagName.toLowerCase() == 'tr') || (targobj.tagName.toLowerCase() == 'td');
+	} else if (document.getElementById) { // Netcsape 6
+		var tname = targobj.tagName+'';
+		tname = tname.toLowerCase();
+		return (tname == 'tr') || (tname == 'td');
+	}
+
+	return false;
+}
+function getEl(eltname){
+	return document.getElementById(eltname);
+}
+function getElVal(eltname){
+	if (document.getElementById(eltname) == null){
+		return '';
+	}
+	return document.getElementById(eltname).value;
+}
+function getSelVal(eltname){
+	return document.getElementById(eltname)[document.getElementById(eltname).selectedIndex].value;
+}
+function setSelVal(objref, val){
+	var errorcount = 0;
+	//alert('len : '+objref.options.length);
+	for (var i = 0; i < objref.options.length;i++){
+		//alert('objref.options[i].value : '+objref.options[i].value+' - val : '+val);
+		if (objref.options[i].value == val){
+			try{
+				//alert('same');	
+				objref.options[i].selected = true;
+				return;
+			}catch(exc){
+				//alert('error');
+				if (errorcount++ < 100) i--;
+				continue;
+			}
+		}
+	}
+}
+function getObjSelVal(objelt){
+	return objelt[objelt.selectedIndex].value;
+}
+function getEventSourceObject(e){
+	if (!e) e = window.event;
+
+	var returnedobj = null;
+
+	/*if (document.layers) {	// Netscape 4
+		returnedobj = e.srcElement;
+	} else */
+	if (document.all) {	// IE
+		returnedobj = window.event.srcElement;
+	} else if (document.getElementById) {	// Netscape 6
+		if (e.target) returnedobj = e.target;
+		else if (e.currentTarget) returnedobj = e.currentTarget;
+		else returnedobj = e.srcElement;
+	}
+	if (returnedobj != null && returnedobj.nodeType == Node.TEXT_NODE){		// defeat Safari bug
+		returnedobj = returnedobj.parentNode;
+	}
+	return returnedobj;
+}
+
+// LOCATION HELP TOOLS
+function getAbsolutePosition(element){
+    var ret = new Point();
+    var i = 0;
+    while (element && element != document.body){
+		ret.translate(element.offsetLeft, element.offsetTop);
+		element = element.offsetParent;
+		i++;
+		if (i > 100) alert('overflow');
+    }
+    return ret;
+}
+function Point(x,y){
+        this.x = x || 0;
+        this.y = y || 0;
+        this.toString = function(){
+            return '('+this.x+', '+this.y+')';
+        };
+        this.translate = function(dx, dy){
+            this.x += dx || 0;
+            this.y += dy || 0;
+        };
+        this.getX = function(){ return this.x; }
+        this.getY = function(){ return this.y; }
+        this.equals = function(anotherpoint){
+            return anotherpoint.x == this.x && anotherpoint.y == this.y;
+        };
+}
+
+// TUTORIAL TOOLS
+var _currenttutoid = -1;
+var _tutorialstarted = false;
+var _tutotimeout = 0;
+var _tutoframename = '';
+var _tutoItems = new Array();
+var _tutoAlign = new Array();
+var _tuto_ms = 0;
+
+function startTutorial(ifrname, tutoItems, tutoAlign, tutoText, tutoPosCorr, timeout_ms){
+	_tutoItems = tutoItems;
+	_tutoAlign = tutoAlign;
+	_tutoText = tutoText;
+	_tutoPosCorr = tutoPosCorr;
+	_tuto_ms = timeout_ms;
+	_tutoframename = ifrname;
+
+	_currenttutoid = -1
+	getEl(_tutoframename).style.display = 'block';
+
+	clearTimeout(_tutotimeout);
+	_tutotimeout = setTimeout('loadNextTuto()',100);
+}
+
+function loadNextTuto(){
+	_currenttutoid++;
+	if (_currenttutoid < _tutoItems.length){
+		showTuto(_currenttutoid);
+	}else{
+		_currenttutoid = -1;
+		_tutorialstarted = false;
+		getEl(_tutoframename).style.display = 'none';
+	}
+}
+
+function showTuto(itemid){
+	getEl(_tutoframename).style.left = getAbsolutePosition(getEl(_tutoItems[itemid])).x + _tutoPosCorr[itemid];
+	if (_tutoAlign[itemid] == 'right'){
+		getEl(_tutoframename).style.left = getAbsolutePosition(getEl(_tutoItems[itemid])).x - parseInt(getEl(_tutoframename).style.width+0) + 20 + _tutoPosCorr[itemid];
+	}
+	getEl(_tutoframename).style.top = getAbsolutePosition(getEl(_tutoItems[itemid])).y + 10;
+	getEl(_tutoframename).src = 'globalization.TooltipHelp?txt='+escape(_tutoText[itemid])+'&size=medium&ifrname='+_tutoframename+'&align='+_tutoAlign[itemid] + '&dt='+new Date();
+
+	if (getEl(_tutoframename).style.display == 'block'){
+		_tutotimeout = setTimeout('loadNextTuto()',_tuto_ms);
+	}
+}
+
+function _showHelp(ifrmname, objref, ali, txt, decaX, decaY, size, tuto, valign){
+	getEl(ifrmname).style.display = 'block';
+	if (!size) size = 'medium';
+	if (size != 'vsmall' && size != 'small' && size != 'medium' && size != 'large') size = 'medium';
+
+	if (ali != 'right') ali = 'left';
+	if (valign != 'bottom') valign = 'top';
+
+	getEl(ifrmname).style.left = getAbsolutePosition(objref).x + decaX;
+	if (ali.indexOf('right')){
+		getEl(ifrmname).style.left = getAbsolutePosition(objref).x - parseInt(getEl(ifrmname).style.width+0) + 20 + decaX;
+	}
+	if (size == 'vsmall'){
+		getEl(ifrmname).style.left = parseInt(getEl(ifrmname).style.left+0) + 100;
+	}
+	if (size == 'large'){
+		getEl(ifrmname).style.left = parseInt(getEl(ifrmname).style.left+0) - 100;
+	}
+	getEl(ifrmname).style.top = getAbsolutePosition(objref).y + 10 + decaY;
+
+	if (document.body.clientHeight < (parseInt(getEl(ifrmname).style.top+0) + getEl(ifrmname).offsetHeight)){
+		getEl(ifrmname).style.top = parseInt(getEl(ifrmname).style.top+0) - getEl(ifrmname).offsetHeight + 45;
+		valign = 'bottom';
+	}
+
+	getEl(ifrmname).src = 'globalization.TooltipHelp?txt='+escape(txt)+'&size='+size+'&ifrname='+ifrmname+'&align='+ali+(valign ? '&valign='+valign : '')+(tuto ? '': '&notuto=') + '&dt='+new Date();
+}
+
+// Browser detection
+function getInternetExplorerVersion(){
+	var rv = -1;
+	if (navigator.appName == 'Microsoft Internet Explorer')
+	{
+		var ua = navigator.userAgent;
+		var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+		if (re.exec(ua) != null)
+			rv = parseFloat( RegExp.$1 );
+	}
+	else if (navigator.appName == 'Netscape')
+	{
+		var ua = navigator.userAgent;
+		var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+		if (re.exec(ua) != null)
+			rv = parseFloat( RegExp.$1 );
+	}
+	return rv;
+}
+
+function isMSIE11(){
+	return (getInternetExplorerVersion()==11);
+}
+function isMSIE8(){
+	return (navigator.userAgent.indexOf('MSIE 9') < 0) && (navigator.userAgent.indexOf('MSIE 7') >= 0) && (navigator.appName.indexOf('Internet Explorer') >= 0) && (navigator.userAgent.indexOf('Opera') < 0);
+}
+function isMSIE7(){
+	return (navigator.userAgent.indexOf('MSIE 9') < 0) && (navigator.userAgent.indexOf('MSIE 8') < 0) && (navigator.userAgent.indexOf('MSIE 7') >= 0) && (navigator.appName.indexOf('Internet Explorer') >= 0) && (navigator.userAgent.indexOf('Opera') < 0);
+}
+function isMSIE(){
+	return (navigator.appName.indexOf('Internet Explorer') >= 0) && (navigator.userAgent.indexOf('Opera') < 0);
+}
+function isOpera(){
+	return (navigator.appName.indexOf('Opera') >= 0) ||  (navigator.userAgent.indexOf('Opera') >= 0);
+}
+function isFF(){
+	return (navigator.appName.indexOf('Netscape') >= 0) && (navigator.userAgent.indexOf('Firefox') >= 0);
+}
+function isKHTMLBrower(){
+	return isKonqueror() || isSafari();
+}
+function isKonqueror(){
+	return (navigator.appName.indexOf('Konqueror') >= 0) || (navigator.userAgent.indexOf('Konqueror') >= 0);
+}
+function isSafari(){
+	return (navigator.userAgent.indexOf('Safari') >= 0);
+}
+
+function sortFunc(record1, record2) {
+	var value1 = record1.optText.toLowerCase();
+	var value2 = record2.optText.toLowerCase();
+	if (value1 > value2) return 1;
+	if (value1 < value2) return -1;
+	return 0;
+}
+
+function sortSelectObj(selectToSort){
+	// copy options into an array
+	var myOptions = [];
+	for (var loop = 0; loop < selectToSort.options.length; loop++) {
+		myOptions[loop] = { optText:selectToSort.options[loop].text, optValue:selectToSort.options[loop].value };
+	}
+
+	// sort array
+	myOptions.sort(sortFunc);
+
+	// copy sorted options from array back to select box
+	selectToSort.options.length = 0;
+	selectToSort.options[0] = new Option('','-1');
+	for (var loop = 0; loop < myOptions.length; loop++) {
+		selectToSort.options[selectToSort.options.length] = new Option(myOptions[loop].optText, myOptions[loop].optValue);
+	}
+}
+
+function stringToXML(text){
+	if (isMSIE()){ // code for IE
+		var doc = new ActiveXObject('Microsoft.XMLDOM');
+		doc.async = 'false';
+		doc.loadXML(text);
+	/*}else if (isOpera()) { // code for opera
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', 'data:text/xml;charset=utf-8,' + encodeURIComponent(text), false);
+		xmlhttp.send('');
+		return xmlhttp.responseXML;*/
+	}else{
+		var doc = new DOMParser().parseFromString(text,'text/xml');
+	}
+	return doc;
+}
+
+function GetXmlHttpObject(handler){
+	// 1. define an 'xmlHttp' var
+	// 2. define a handler: a function that check the object parameters : 	if (xmlHttp.readyState==4 || xmlHttp.readyState=="complete")
+	// 3. read the response: xmlHttp.responseText
+
+	var objXmlHttp = null;
+
+	if (isFF() || isOpera() || isSafari() || isMSIE11()){
+		objXmlHttp = new XMLHttpRequest();
+		objXmlHttp.onload=handler;
+		objXmlHttp.onerror=handler;
+		return objXmlHttp;
+	}
+	if (isMSIE()){
+		var strName = 'Msxml2.XMLHTTP';
+		if (navigator.appVersion.indexOf("MSIE 5.5") >= 0){
+			strName = 'Microsoft.XMLHTTP';
+		}
+		try	{
+			objXmlHttp = new ActiveXObject(strName);
+			objXmlHttp.onreadystatechange = handler;
+			return objXmlHttp;
+		} catch(e){ 
+			alert("Error. Scripting for ActiveX might be disabled");
+			return;
+		} 
+	} /*
+	if(navigator.appVersion.indexOf("rv:11.0")> 0 ){
+		var strName = 'Msxml2.XMLHTTP';
+		objXmlHttp = new ActiveXObject(strName);
+		objXmlHttp.onreadystatechange = handler;
+		return objXmlHttp;
+	}*/
+}
+
+function eventCellIndex(e){
+	if (isSafari()) return -1;
+
+	if (getEventSourceObject(e) != null && getEventSourceObject(e) != 'undefined' && getEventSourceObject(e).cellIndex != 'undefined'){
+		return getEventSourceObject(e).cellIndex;
+	}
+	return -1;
+}
+
+function showProgressBar(){
+	if (document.getElementById('mainloadbar') != null){
+		document.getElementById('mainloadbar').innerHTML = '';
+
+		var elt = document.createElement('img');
+		elt.src = '/images/loadbargreen.gif';
+		elt.border = 0;
+		elt.align = 'absmiddle';
+
+		document.getElementById('mainloadbar').appendChild(elt);
+	}
+}
+function hideProgressBar(){
+	if (document.getElementById('mainloadbar') != null){
+		document.getElementById('mainloadbar').innerHTML = '';
+	}
+}
+
+function getWeekNr(dt){
+	now = Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()+1,0,0,0);
+
+	var Firstday = new Date();
+	Firstday.setYear(dt.getFullYear());
+	Firstday.setMonth(0);
+	Firstday.setDate(1);
+
+	then = Date.UTC(dt.getFullYear(),0,1,0,0,0);
+	var Compensation = Firstday.getDay() - 1;
+
+	if (Compensation > 3) Compensation -= 4;
+	else Compensation += 3;
+
+	return Math.round((((now-then)/86400000)+Compensation)/7);
+}
+
+// Removes leading whitespaces
+function LTrim( value ) {
+	if (!value || value == '') return '';
+	var re = /\s*((\S+\s*)*)/;
+	return value.replace(re, "$1");
+}
+
+// Removes ending whitespaces
+function RTrim( value ) {
+	if (!value || value == '') return '';
+	var re = /((\s*\S+)*)\s*/;
+	return value.replace(re, "$1");
+}
+
+// Removes leading and ending whitespaces
+function trim( value ) {
+	return LTrim(RTrim(value));
+}
+
+function CheckDate(dateString){ 
+	theDay="";
+	theMonth="";
+	theYear="";
+
+	// Extract year
+
+	i = 0;
+
+	while (dateString.charAt(i) != "-" && i < 10){
+		theYear += dateString.charAt(i);
+		i++;
+	}
+
+	dateString = dateString.substring(i+1,dateString.length);
+
+	// Extract month
+	i = 0;
+	while (dateString.charAt(i) != "-" && i < 10){
+		theMonth += dateString.charAt(i);
+		i++;
+	}
+
+	if (theMonth.charAt(0) == "0") theMonth = theMonth.charAt(1);
+
+	dateString = dateString.substring(i+1,dateString.length);
+
+	// Extract year
+	theDay = dateString;
+	if (theDay.charAt(0) == "0") theDay = theDay.charAt(1);
+
+	if (theYear < 1800 || theYear > 2600) return false;
+	var dayCount = dayInMonth(theMonth,theYear);
+	if (theDay < 1 || theDay > dayCount) return false;
+	if (theDay <= 31 && dayCount == 31) return true;
+	if (theDay <= 29 && dayCount == 29) return true;
+	if (theDay = 28 && dayCount == 28) return true;
+	if (theDay <= 30 && dayCount == 30) return true;
+	return false;
+}
+
+function dayInMonth(month,year){
+	if (month < 1 || month > 12) return -1;
+	if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) return 31;
+	if (month == 4 || month == 6 || month == 9 || month == 11) return 30;
+	if (month == 2 && year % 4 == 0) return 29;
+	return 28;
+}
+
+var includedScripts = new Array();
+function include(fichier){
+	// Si notre variable globale (rattachée à l'objet window) n'existe pas, on la créée.
+	try {
+		if (includedScripts[fichier] != null) return;
+
+		SCRIPT = document.createElement("script");
+		SCRIPT.type = "text/javascript";
+		SCRIPT.src = fichier + '?dt=' + new Date();
+		HEAD = document.getElementsByTagName("head");
+		HEAD[0].appendChild(SCRIPT);
+		includedScripts[fichier] = '';
+	} catch(e) {
+		alert('Include error:'+e.message);
+		document.write('<script type="text/javascript" src="' + fichier + '"><\/script>');
+		includedScripts[fichier] = '';
+	}
+}
+
+Date.prototype.add = function (unite, iNum){
+  var dTemp = this;
+  if (!unite || iNum == 0) return dTemp;
+  switch (unite.toLowerCase()){
+    case 'ms':
+      dTemp.setMilliseconds(dTemp.getMilliseconds() + iNum);
+      break;
+    case 's':
+      dTemp.setSeconds(dTemp.getSeconds() + iNum);
+      break;
+    case 'mi':
+      dTemp.setMinutes(dTemp.getMinutes() + iNum);
+      break;
+    case 'h':
+      dTemp.setHours(dTemp.getHours() + iNum);
+      break;
+    case 'd':
+      dTemp.setDate(dTemp.getDate() + iNum);
+      break;
+    case 'mo':
+      dTemp.setMonth(dTemp.getMonth() + iNum);
+      break;
+    case 'y':
+      dTemp.setFullYear(dTemp.getFullYear() + iNum);
+      break;
+  }
+  return dTemp;
+}
+
+function cleanTable(tobj, leaverow){
+	if (!leaverow) leaverow = 0;
+
+	while (tobj.rows.length > leaverow){
+		tobj.deleteRow(tobj.rows.length - 1);
+	}
+}
+
+function grayLine(e){
+	if (!e) e = window.event;
+	var srcobj = getEventSourceObject(e);
+	while (srcobj.tagName.toLowerCase() != 'tr' && srcobj != document.body){
+		srcobj = srcobj.parentNode;
+	}
+	srcobj.style.backgroundColor = '#EEEEEE';
+}
+function ungrayLine(e){
+	if (!e) e = window.event;
+	var srcobj = getEventSourceObject(e);
+	while (srcobj.tagName.toLowerCase() != 'tr' && srcobj != document.body){
+		srcobj = srcobj.parentNode;
+	}
+	srcobj.style.backgroundColor = '';
+}
+
+function getCellIndex(obj){
+	if (obj == null || obj.tagName.toLowerCase() != 'td' || obj.parentNode.tagName.toLowerCase() != 'tr') return -1;
+
+	if (isSafari()){
+		var parent_row = obj.parentNode;
+
+		for (var i = 0; i < parent_row.cells.length; i++) {
+			if (obj == parent_row.cells[i]) return i;
+		}
+	}else{
+		return obj.cellIndex;
+	}
+}
+
+function switchPanels(newpanelname, parampanellist){
+	// add all panels content
+	for (var ixxx = 0; ixxx < parampanellist.length;ixxx++){
+		if (getEl('table'+parampanellist[ixxx]) != null){
+			getEl('table'+parampanellist[ixxx]).style.display = 'none';
+		}
+		if (getEl('divbatch'+parampanellist[ixxx]) != null){
+			getEl('divbatch'+parampanellist[ixxx]).style.display = 'none';
+		}
+	}
+	if (getEl('table'+newpanelname) == null) return;
+
+	if (getEl('divbatch'+newpanelname) != null){
+		getEl('divbatch'+newpanelname).style.display = 'block';
+	}
+	getEl('table'+newpanelname).style.display = 'block';
+
+	// at which level is the clicked panel ?
+	paneldown = getEl('tab'+newpanelname).lang;
+
+	// how many levels are there?
+	var addtabscount = 0;
+	for (var i = 0; i < 50; i++){
+		if (getEl('tabplace' + i) != null){
+			addtabscount = i;
+		}else{
+			break;
+		}
+	}
+
+	var divcontainer = getEl('tabplace');
+
+	// put all levels in cache
+	var listTabs = new Array();
+	for (var i = 0; i < divcontainer.childNodes.length;i++){
+		if (divcontainer.childNodes[i].nodeType != Node.ELEMENT_NODE) continue;
+
+		listTabs[i] = divcontainer.childNodes[i].cloneNode(true);
+	}
+
+	// remove all levels
+	while (divcontainer.hasChildNodes()){
+		divcontainer.removeChild(divcontainer.childNodes[0]);
+	}
+
+	// restore all levels except clicked one
+	var myindex = -1;
+	for (var i = 0; i < listTabs.length;i++){
+		if (listTabs[i] == null) continue;
+		if (listTabs[i].id.substring(8) == paneldown){
+			myindex = i;
+			continue;
+		}
+		divcontainer.appendChild(listTabs[i]);
+	}
+	divcontainer.appendChild(listTabs[myindex]);
+
+	// restore clicked level
+	for (var ixxx = 0; ixxx < parampanellist.length;ixxx++){
+		if (getEl('tab'+parampanellist[ixxx]) == null) continue;
+
+		if (getEl('tab'+parampanellist[ixxx]).className == 'selectedtabitem'){
+			getEl('tab'+parampanellist[ixxx]).className = 'tabitem';
+		}
+	}
+
+	getEl('tab'+newpanelname).className = 'selectedtabitem';
+	if (getEl('selectedpanel') != null){
+		getEl('selectedpanel').value = newpanelname;
+	}
+	return false;
+}
+
+var waitcompleteimgid = null;
+var waitcompleteimgbodywidth = 0;
+var waitcompleteimgbodyheight = 0;
+
+function openImage(e){
+	if (!e) e = window.event;
+
+	waitcompleteimgbodywidth = getPageSize().x;
+	waitcompleteimgbodyheight = getPageSize().y;
+
+	waitcompleteimgid = new Date();
+
+	var targobj = getEventSourceObject(e);
+	var targobjid = -1;
+	if (targobj.id.indexOf('_') >= 0){
+		targobjid = targobj.id.substring(targobj.id.lastIndexOf('_')+1);
+	}else{
+		targobjid = targobj.id;
+	}
+
+	var bgifr = document.createElement('iframe');
+	bgifr.id = 'bgimframe_'+waitcompleteimgid;
+	bgifr.src = '/mtug/blank.htm';
+	bgifr.frameborder = 0;
+	bgifr.className = 'transparent60';
+	bgifr.style.position = 'absolute';
+	bgifr.style.top = bgifr.style.left = 0;
+	bgifr.style.zIndex = 90;
+	document.body.appendChild(bgifr);
+
+	var img = document.createElement('img');
+	img.src = '/images/close2red.gif';
+	img.style.position = 'absolute';
+	img.style.zIndex = 99;
+	img.id = 'imageclose_'+waitcompleteimgid;
+	img.border = 0;
+	img.style.border = '#FF0000 2px solid';
+	img.style.backgroundColor = '#FFFFFF';
+	img.onclick = hideOpenedImage;
+	document.body.appendChild(img);
+
+	var img = document.createElement('img');
+	img.src = 'utils.GetImage?id='+targobjid + (targobj.lang ? '&table='+targobj.lang : '') + '&dt='+new Date();
+	img.border = 0;
+	img.style.border = '#AEE4FF 10px solid';
+	img.align = 'absmiddle';
+	img.style.position = 'absolute';
+	img.id = 'myimage__'+waitcompleteimgid;
+	img.style.top = img.style.left = 25;
+	img.style.zIndex = 98;
+	document.body.appendChild(img);
+
+	setTimeout('waitForImageToOpen()',100);
+}
+
+function waitForImageToOpen(){
+	if (getEl('myimage__'+waitcompleteimgid).complete != null && !getEl('myimage__'+waitcompleteimgid).complete){
+		setTimeout('waitForImageToOpen()',100);
+		return;
+	}
+	if ((parseInt(getEl('myimage__'+waitcompleteimgid).width+0)+50) < parseInt(waitcompleteimgbodywidth+0)
+		|| (parseInt(getEl('myimage__'+waitcompleteimgid).height+0)+50) < parseInt(waitcompleteimgbodyheight+0) )
+	{
+		getEl('myimage__'+waitcompleteimgid).style.top = ((document.body.clientHeight - getEl('myimage__'+waitcompleteimgid).height) / 2) - 50 + document.body.scrollTop;
+		getEl('myimage__'+waitcompleteimgid).style.left = (document.body.clientWidth - getEl('myimage__'+waitcompleteimgid).width) / 2 + document.body.scrollLeft;
+	}else{
+		getEl('myimage__'+waitcompleteimgid).style.top = parseInt(getEl('myimage__'+waitcompleteimgid).style.top+0) + document.body.scrollTop;
+		getEl('myimage__'+waitcompleteimgid).style.left = parseInt(getEl('myimage__'+waitcompleteimgid).style.left+0) + document.body.scrollLeft;
+	}
+
+	getEl('imageclose_'+waitcompleteimgid).style.top = parseInt(getEl('myimage__'+waitcompleteimgid).style.top+0) - 17;
+	getEl('imageclose_'+waitcompleteimgid).style.left = parseInt(getEl('myimage__'+waitcompleteimgid).style.left+0) - 17;
+
+	getEl('bgimframe_'+waitcompleteimgid).style.width = getPageSize().x;
+	getEl('bgimframe_'+waitcompleteimgid).style.height = getPageSize().y;
+}
+
+function hideOpenedImage(){
+	document.body.removeChild(getEl('myimage__'+waitcompleteimgid));
+	document.body.removeChild(getEl('imageclose_'+waitcompleteimgid));
+	document.body.removeChild(getEl('bgimframe_'+waitcompleteimgid));
+}
+
+function getPageSize(){
+	var myWidth = 0, myHeight = 0;
+	if (isFF()){
+		return new Point(document.body.offsetWidth, document.body.offsetHeight);
+	}
+	if (isMSIE()){
+		return new Point(document.body.scrollWidth, document.body.scrollHeight);
+	}
+
+	if(!isOpera() && typeof( window.innerWidth ) == 'number' ) {
+		//Non-IE
+		myWidth = window.innerWidth;
+		myHeight = window.innerHeight;
+	} else if(document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+		//IE 6+ in 'standards compliant mode'
+		myWidth = document.documentElement.clientWidth;
+		myHeight = document.documentElement.clientHeight;
+	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+		//IE 4 compatible
+		myWidth = document.body.clientWidth;
+		myHeight = document.body.clientHeight;
+	}
+	return new Point(myWidth, myHeight);
+}
+
+function URLEncode(sXml){
+	for (var i = 0; i<sXml.length; i++) {
+		if(sXml.charCodeAt(i)>128 || sXml.charCodeAt(i)==60 || sXml.charCodeAt(i)==62 || sXml.charCodeAt(i)==37 || sXml.charCodeAt(i)==38 || sXml.charCodeAt(i)==39 || sXml.charCodeAt(i)==43 ) {
+			var charint = sXml.charCodeAt(i);
+			sXml = sXml.substring(0,i)+'%'+charint.toString(16)+sXml.substring(i+1,sXml.length);
+		}
+	}
+	return sXml;
+}
+function URLEncodeWithoutAccent(sXml){
+	for (var i = 0; i<sXml.length; i++) {
+		if(/*sXml.charCodeAt(i)>128 ||*/ sXml.charCodeAt(i)==60 || sXml.charCodeAt(i)==62 || sXml.charCodeAt(i)==37 || sXml.charCodeAt(i)==38 || sXml.charCodeAt(i)==39 || sXml.charCodeAt(i)==43 ) {
+			var charint = sXml.charCodeAt(i);
+			sXml = sXml.substring(0,i)+'%'+charint.toString(16)+sXml.substring(i+1,sXml.length);
+		}
+	}
+	return sXml;
+}
+
+function XMLEncode(sXml){
+    for(var i = 0; i < sXml.length; i++) {
+    	if(sXml.charCodeAt(i)>128 || sXml.charCodeAt(i)==60 || sXml.charCodeAt(i)==62 || sXml.charCodeAt(i)==34  || sXml.charCodeAt(i)==39 || sXml.charCodeAt(i)==38 ) {
+    		var charint = sXml.charCodeAt(i);
+    		sXml = sXml.substring(0,i)+'&#'+charint+';'+sXml.substring(i+1,sXml.length);
+    	}
+    }
+    return sXml;    
+}
+
+function getPageSizeWithScroll(){
+	if (window.innerHeight && window.scrollMaxY) {
+		// Firefox
+		yWithScroll = window.innerHeight + window.scrollMaxY;
+		xWithScroll = window.innerWidth + window.scrollMaxX;
+	} else if (document.body.scrollHeight > document.body.offsetHeight){
+		// all but Explorer Mac         
+		yWithScroll = document.body.scrollHeight;         
+		xWithScroll = document.body.scrollWidth;     
+	} else {
+		// works in Explorer 6 Strict, Mozilla (not FF) and Safari
+		yWithScroll = document.body.offsetHeight;
+		xWithScroll = document.body.offsetWidth;
+	}
+	return new Point(xWithScroll,yWithScroll);
+}

@@ -1,0 +1,37 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+    http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+	version="1.0">
+	<persistence-unit name="Connection">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<properties>
+			<property name="hibernate.archive.autodetection" value="class" />
+<!-- 			<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" /> -->
+<!-- 			<property name="hibernate.connection.url" value="jdbc:h2:tcp://localhost/~/test" /> -->
+<!-- 			<property name="hibernate.connection.driver_class" value="org.h2.Driver" /> -->
+<!-- 			<property name="hibernate.connection.username" value="sa" /> -->
+<!-- 			<property name="hibernate.connection.password" value="" /> -->
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/templatedb?createDatabaseIfNotExist=true" />
+			<property name="hibernate.connection.username" value="root" />
+			<property name="hibernate.connection.password" value="root" />
+			
+			
+			<!-- hibernate.hbm2ddl.auto values (use it in dev mode): -->
+			<!-- validate: validate the schema, makes no changes to the database. -->
+			<!-- update: update the schema. -->
+			<!-- create: creates the schema, destroying previous data. -->
+			<!-- create-drop: drop the schema when the SessionFactory is closed explicitly, 
+				typically when the application is stopped. -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.connection.autocommit" value="true" />
+			<property name="hibernate.connection.characterEncoding"
+				value="utf8" />
+			<property name="hibernate.connection.charSet" value="utf8" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.use_sql_comments" value="true" />
+		</properties>
+	</persistence-unit>
+</persistence>

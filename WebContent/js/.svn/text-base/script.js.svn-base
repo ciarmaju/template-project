@@ -1,0 +1,36 @@
+	    function resize() {
+			//var menu = document.getElementById("menu");
+			var header = document.getElementById("header");
+			//var content = document.getElementById("content");
+			var container = document.getElementById("scheduler_here");
+			//content.style.width = (document.body.offsetWidth-menu.offsetWidth) + "px";
+			var height = document.body.offsetHeight-header.offsetHeight;
+			//content.style.height = height + "px";
+			//container.style.height = (height-150) + "px";
+
+			if (scheduler)
+				scheduler.setCurrentView();
+		};
+    	window.onload = resize;
+    	window.onresize = resize;
+	$(function() {
+		$( ".datepicker" ).datepicker({ dateFormat: "yy-mm-dd 00:00:00" });
+		$( ".datepicker2" ).datepicker({ dateFormat: "yy-mm-dd 23:59:59" });
+		$( ".datepicker3" ).datepicker({ dateFormat: "yy-mm-dd 00:00:00" });
+		$( ".datepicker4" ).datepicker({ dateFormat: "yy-mm-dd 23:59:59" });
+		$( ".datepicker5" ).datepicker({ dateFormat: "yy-mm-dd 00:00:00" });
+		$( ".datepicker6" ).datepicker({ dateFormat: "yy-mm-dd 23:59:59" });
+	});
+	function checkdate(item, item2){
+		if($('.'+item+'').datepicker("getDate")>$('.'+item2+'').datepicker("getDate")){ 
+			alert("\'Date to\' must be greater or equals to \'Date from\'");
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	function selectall(item){
+	    $('#'+item+' option').attr('selected', 'selected');
+	}
+	
